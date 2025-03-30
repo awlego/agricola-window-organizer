@@ -54,3 +54,7 @@ If you encounter any issues or have suggestions for improvements, please [open a
 
 ## TODO:
 publish to chrome web store
+
+ideas:
+* support for 1p, 2p, 3p, 4p, 5p windows layouts.
+* Maybe just remember the last used layout and just use that? or at least have that be an option
