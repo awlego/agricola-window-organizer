@@ -50,7 +50,7 @@ This extension requires the following permissions:
 - **alarms**: For background keep-alive functionality
 
 ## Support
-If you encounter any issues or have suggestions for improvements, please [open an issue](https://github.com/yourusername/agricola-window-organizer/issues) on our GitHub repository.
+If you encounter any issues or have suggestions for improvements, please [open an issue](https://github.com/awlego/agricola-window-organizer/issues) on our GitHub repository.
 
 ## TODO:
 publish to chrome web store
