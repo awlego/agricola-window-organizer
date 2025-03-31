@@ -1,20 +1,12 @@
 # Agricola Window Organizer
 A Chrome extension designed to enhance your online Agricola board game experience by organizing browser windows. 
 
-WORK IN PROGRESS:
-It also keeps game tabs active even when the main agricola.com page is hidden from view.
-
 ## Features
 - **Window Organization**: Automatically arrange your Agricola game windows in a really unoptimal layout, but hey you can find them all.
 - **Save & Restore**: Save your preferred window positions and restore them later
 - **Keep-Alive Functionality**: Prevent Agricola game tabs from being suspended or timing out due to inactivity
 
 ## Installation
-### From Chrome Web Store
-*(Once published)*
-1. Visit the [Chrome Web Store](https://chrome.google.com/webstore)
-2. Search for "Agricola Window Organizer"
-3. Click "Add to Chrome"
    
 ### Manual Installation (Developer Mode)
 1. Download or clone this repository
@@ -54,7 +46,3 @@ If you encounter any issues or have suggestions for improvements, please [open a
 
 ## TODO:
 publish to chrome web store
-
-ideas:
-* support for 1p, 2p, 3p, 4p, 5p windows layouts.
-* Maybe just remember the last used layout and just use that? or at least have that be an option

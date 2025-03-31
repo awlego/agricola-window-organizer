@@ -29,6 +29,38 @@ function showStatus(message) {
   }, 3000);
 }
 
+// Function to determine player count from window count
+function getPlayerCount(windowCount) {
+  // According to the formula: windowCount = 3 + playerCount
+  const playerCount = windowCount - 3;
+  return playerCount > 0 ? playerCount : 0; // Ensure we don't return negative values
+}
+
+// Function to update button labels based on detected player count
+function updateButtonLabels(playerCount) {
+  if (playerCount > 0 && playerCount <= 5) {
+    document.getElementById('saveBtn').textContent = `Save ${playerCount}P Window Positions`;
+    document.getElementById('restoreBtn').textContent = `Restore ${playerCount}P Window Positions`;
+    document.getElementById('organizeBtn').textContent = `Auto-Organize ${playerCount}P Windows`;
+  } else {
+    // Default labels if player count is invalid
+    document.getElementById('saveBtn').textContent = 'Save Window Positions';
+    document.getElementById('restoreBtn').textContent = 'Restore Window Positions';
+    document.getElementById('organizeBtn').textContent = 'Auto-Organize Windows';
+  }
+}
+
+// Function to check current Agricola windows and update UI
+function updateUI() {
+  findAgricolaWindows(function(agricolaWindows) {
+    const playerCount = getPlayerCount(agricolaWindows.length);
+    updateButtonLabels(playerCount);
+  });
+}
+
+// Run updateUI when popup opens
+document.addEventListener('DOMContentLoaded', updateUI);
+
 // Save window positions
 document.getElementById('saveBtn').addEventListener('click', function() {
   findAgricolaWindows(function(agricolaWindows) {
@@ -36,6 +68,8 @@ document.getElementById('saveBtn').addEventListener('click', function() {
       showStatus('No Agricola windows found to save.');
       return;
     }
+    
+    const playerCount = getPlayerCount(agricolaWindows.length);
     
     // Create an array of window positions and sizes
     const savedWindows = agricolaWindows.map(window => {
@@ -49,32 +83,35 @@ document.getElementById('saveBtn').addEventListener('click', function() {
       };
     });
     
-    // Save to local storage
-    chrome.storage.local.set({'agricolaWindowPositions': savedWindows}, function() {
-      showStatus(`Saved positions for ${savedWindows.length} windows!`);
+    // Save to local storage with player count as part of the key
+    const storageKey = `agricolaWindowPositions_${playerCount}P`;
+    chrome.storage.local.set({[storageKey]: savedWindows}, function() {
+      showStatus(`Saved positions for ${playerCount}P (${savedWindows.length} windows)!`);
     });
   });
 });
 
 // Restore window positions
 document.getElementById('restoreBtn').addEventListener('click', function() {
-  // Get saved positions from storage
-  chrome.storage.local.get('agricolaWindowPositions', function(data) {
-    if (!data.agricolaWindowPositions || data.agricolaWindowPositions.length === 0) {
-      showStatus('No saved positions found.');
+  // First find current windows to determine player count
+  findAgricolaWindows(function(currentWindows) {
+    if (currentWindows.length === 0) {
+      showStatus('No Agricola windows currently open.');
       return;
     }
     
-    // Find current Agricola windows
-    findAgricolaWindows(function(currentWindows) {
-      if (currentWindows.length === 0) {
-        showStatus('No Agricola windows currently open.');
+    const playerCount = getPlayerCount(currentWindows.length);
+    const storageKey = `agricolaWindowPositions_${playerCount}P`;
+    
+    // Get saved positions from storage for this player count
+    chrome.storage.local.get(storageKey, function(data) {
+      if (!data[storageKey] || data[storageKey].length === 0) {
+        showStatus(`No saved positions found for ${playerCount}P.`);
         return;
       }
       
       // Restore positions
-      // We'll match by index since window IDs might have changed
-      const savedPositions = data.agricolaWindowPositions;
+      const savedPositions = data[storageKey];
       const count = Math.min(currentWindows.length, savedPositions.length);
       
       for (let i = 0; i < count; i++) {
@@ -88,7 +125,7 @@ document.getElementById('restoreBtn').addEventListener('click', function() {
         });
       }
       
-      showStatus(`Restored positions for ${count} windows!`);
+      showStatus(`Restored positions for ${playerCount}P (${count} windows)!`);
     });
   });
 });
@@ -98,6 +135,8 @@ document.getElementById('organizeBtn').addEventListener('click', function() {
   findAgricolaWindows(function(agricolaWindows) {
     // If we found any Agricola windows, organize them
     if (agricolaWindows.length > 0) {
+      const playerCount = getPlayerCount(agricolaWindows.length);
+      
       // Calculate screen dimensions for arranging windows
       const screenWidth = screen.width;
       const screenHeight = screen.height;
@@ -116,9 +155,30 @@ document.getElementById('organizeBtn').addEventListener('click', function() {
         });
       });
       
-      showStatus(`Auto-organized ${agricolaWindows.length} windows!`);
+      showStatus(`Auto-organized ${playerCount}P (${agricolaWindows.length} windows)!`);
     } else {
       showStatus('No Agricola windows found to organize.');
     }
   });
+});
+
+// Keep-alive toggle functionality
+document.getElementById('keepAliveToggle').addEventListener('change', function(e) {
+  const isEnabled = e.target.checked;
+  
+  // Save the setting
+  chrome.storage.local.set({'keepAliveEnabled': isEnabled}, function() {
+    // Send message to background script
+    chrome.runtime.sendMessage({
+      action: 'toggleKeepAlive',
+      enabled: isEnabled
+    });
+    
+    showStatus(`Keep-alive ${isEnabled ? 'enabled' : 'disabled'}`);
+  });
+});
+
+// Initialize toggle state from storage
+chrome.storage.local.get('keepAliveEnabled', function(data) {
+  document.getElementById('keepAliveToggle').checked = !!data.keepAliveEnabled;
 });
