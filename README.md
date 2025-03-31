@@ -6,6 +6,9 @@ A Chrome extension designed to enhance your online Agricola board game experienc
 - **Save & Restore**: Save your preferred window positions and restore them later
 - **Keep-Alive Functionality**: Prevent Agricola game tabs from being suspended or timing out due to inactivity
 
+## Example Usage:
+[Watch Demo Video](https://www.youtube.com/watch?v=DNG9BnZRhGA)
+
 ## Installation
    
 ### Manual Installation (Developer Mode)
