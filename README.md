@@ -49,3 +49,7 @@ If you encounter any issues or have suggestions for improvements, please [open a
 
 ## TODO:
 publish to chrome web store
+
+support playagricola play-agricola
+support automatic board ordering via inspecting the main playboard html
+see if I can save play agricola scaling factor

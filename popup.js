@@ -9,7 +9,8 @@ function findAgricolaWindows(callback) {
     // Find all windows with Agricola tabs
     for (let window of windows) {
       for (let tab of window.tabs) {
-        if (tab.url.includes('play-agricola.com')) {
+        // Check for both domain variations
+        if (tab.url.includes('play-agricola.com') || tab.url.includes('playagricola.com')) {
           // This window has an Agricola tab
           agricolaWindows.push(window);
           break; // Only need to check one tab per window

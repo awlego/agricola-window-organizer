@@ -44,8 +44,11 @@ function stopKeepAlive() {
 
 // Function to refresh Agricola tabs
 function refreshAgricolaTabs() {
-  // Get all tabs that match play-agricola.com
-  chrome.tabs.query({url: '*://play-agricola.com/*'}, function(tabs) {
+  // Query for both domain variations
+  chrome.tabs.query({url: [
+    '*://play-agricola.com/*', 
+    '*://playagricola.com/*'
+  ]}, function(tabs) {
     if (tabs.length === 0) {
       return; // No Agricola tabs found
     }
