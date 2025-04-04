@@ -2,6 +2,7 @@
 <html>
 <head>
   <title>Agricola Window Organizer</title>
+  <link rel="stylesheet" href="popup.css">
   <style>
     body {
       width: 200px;
@@ -88,8 +89,17 @@
 </head>
 <body>
   <h3>Agricola Window Organizer</h3>
-  <button id="saveBtn">Save Window Positions</button>
-  <button id="restoreBtn">Restore Window Positions</button>
+  <div class="button-container">
+    <button id="saveBtn">Save Window Positions</button>
+    <div id="saveConfirmation" style="display: none;">
+      <p>Are you sure you want to overwrite saved positions?</p>
+      <div class="confirm-buttons">
+        <button id="confirmSave">Yes, Save</button>
+        <button id="cancelSave">Cancel</button>
+      </div>
+    </div>
+    <button id="restoreBtn">Restore Window Positions</button>
+  </div>
   <button id="organizeBtn">Auto-Organize Windows</button>
   
   <div class="toggle-container">

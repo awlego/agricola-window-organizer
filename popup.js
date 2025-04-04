@@ -29,6 +29,11 @@ function showStatus(message) {
   }, 3000);
 }
 
+// Alias for showStatus to maintain compatibility with both function names
+function updateStatus(message) {
+  showStatus(message);
+}
+
 // Function to determine player count from window count
 function getPlayerCount(windowCount) {
   // According to the formula: windowCount = 3 + playerCount
@@ -61,38 +66,65 @@ function updateUI() {
 // Run updateUI when popup opens
 document.addEventListener('DOMContentLoaded', updateUI);
 
-// Save window positions
-document.getElementById('saveBtn').addEventListener('click', function() {
+// Get buttons
+const saveButton = document.getElementById('saveBtn');
+const restoreButton = document.getElementById('restoreBtn');
+const confirmSaveButton = document.getElementById('confirmSave');
+const cancelSaveButton = document.getElementById('cancelSave');
+const saveConfirmation = document.getElementById('saveConfirmation');
+
+// Save button click handler - now shows confirmation dialog
+saveButton.addEventListener('click', function() {
+  saveConfirmation.style.display = 'block';
+  saveButton.style.display = 'none';
+});
+
+// Confirm save button click handler
+confirmSaveButton.addEventListener('click', function() {
+  // Find current Agricola windows
   findAgricolaWindows(function(agricolaWindows) {
     if (agricolaWindows.length === 0) {
       showStatus('No Agricola windows found to save.');
+      saveConfirmation.style.display = 'none';
+      saveButton.style.display = 'block';
       return;
     }
     
+    // Get the player count based on window count
     const playerCount = getPlayerCount(agricolaWindows.length);
-    
-    // Create an array of window positions and sizes
-    const savedWindows = agricolaWindows.map(window => {
-      return {
-        id: window.id,
-        left: window.left,
-        top: window.top,
-        width: window.width,
-        height: window.height,
-        state: window.state
-      };
-    });
-    
-    // Save to local storage with player count as part of the key
     const storageKey = `agricolaWindowPositions_${playerCount}P`;
-    chrome.storage.local.set({[storageKey]: savedWindows}, function() {
-      showStatus(`Saved positions for ${playerCount}P (${savedWindows.length} windows)!`);
+    
+    // Save the positions of all agricola windows
+    const positions = agricolaWindows.map(window => ({
+      left: window.left,
+      top: window.top,
+      width: window.width,
+      height: window.height,
+      state: window.state
+    }));
+    
+    // Store in chrome.storage
+    const saveData = {};
+    saveData[storageKey] = positions;
+    
+    chrome.storage.local.set(saveData, function() {
+      showStatus(`Saved positions for ${playerCount}P (${positions.length} windows)!`);
     });
   });
+  
+  // Hide confirmation and show save button again
+  saveConfirmation.style.display = 'none';
+  saveButton.style.display = 'block';
+});
+
+// Cancel save button click handler
+cancelSaveButton.addEventListener('click', function() {
+  saveConfirmation.style.display = 'none';
+  saveButton.style.display = 'block';
 });
 
 // Restore window positions
-document.getElementById('restoreBtn').addEventListener('click', function() {
+restoreButton.addEventListener('click', function() {
   // First find current windows to determine player count
   findAgricolaWindows(function(currentWindows) {
     if (currentWindows.length === 0) {
